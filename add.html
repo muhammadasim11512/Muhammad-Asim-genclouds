@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LaptopStore — Add / Edit</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a class="small" href="index.html">&larr; Home</a>
+      <h2 id="mode">Add Laptop</h2>
+    </header>
+
+    <main>
+      <form id="form" class="form">
+        <label>Brand
+          <input name="brand" type="text" required>
+        </label>
+        <label>Model
+          <input name="model" type="text" required>
+        </label>
+        <label>Price (Rs)
+          <input name="price" type="number" required>
+        </label>
+        <label>CPU
+          <input name="cpu" type="text">
+        </label>
+        <label>RAM
+          <input name="ram" type="text">
+        </label>
+        <label>Storage
+          <input name="storage" type="text">
+        </label>
+        <label>Image URL
+          <input name="image" type="text" placeholder="https://...">
+          <div class="small">Paste an internet image URL; leave blank for a nice placeholder</div>
+        </label>
+        <label>Description
+          <textarea name="description"></textarea>
+        </label>
+
+        <div style="display:flex;gap:8px">
+          <button type="submit" id="saveBtn">Save</button>
+          <a class="btn secondary" href="index.html">Cancel</a>
+        </div>
+        <div id="msg" class="small" style="margin-top:10px"></div>
+      </form>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('form');
+    const msg = document.getElementById('msg');
+    const modeTitle = document.getElementById('mode');
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (id) {
+      modeTitle.innerText = 'Edit Laptop';
+      const d = getItem(Number(id));
+      if (d) {
+        for (const k of ['brand','model','price','cpu','ram','storage','image','description']) {
+          if (form[k]) form[k].value = d[k] || '';
+        }
+        form.dataset.editId = id;
+      }
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      msg.innerText = '';
+      const payload = {
+        brand: form.brand.value.trim(),
+        model: form.model.value.trim(),
+        price: Number(form.price.value),
+        cpu: form.cpu.value.trim(),
+        ram: form.ram.value.trim(),
+        storage: form.storage.value.trim(),
+        description: form.description.value.trim(),
+        image: form.image.value.trim()
+      };
+      if (!payload.brand || !payload.model || !payload.price) { msg.innerText = 'Brand, model and price are required.'; return; }
+      if (form.dataset.editId) {
+        updateItem(Number(form.dataset.editId), payload);
+        msg.innerText = 'Saved changes. Redirecting...';
+      } else {
+        createItem(payload);
+        msg.innerText = 'Added. Redirecting...';
+      }
+      setTimeout(() => location.href = 'index.html', 700);
+    });
+  });
+  </script>
+</body>
+</html>

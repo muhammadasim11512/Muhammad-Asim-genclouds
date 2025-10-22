@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>LaptopStore — Detail</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header-row">
+      <div>
+        <a class="small" href="index.html">&larr; Back</a>
+        <h2 id="title" style="margin:6px 0 2px"></h2>
+        <div id="sub" class="small"></div>
+      </div>
+      <nav><a class="btn" id="editBtn">Edit</a></nav>
+    </header>
+
+    <main>
+      <div id="content"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if (!id) { document.getElementById('content').innerText = 'No id provided.'; return; }
+    const d = getItem(Number(id));
+    if (!d) { document.getElementById('content').innerText = 'Not found.'; return; }
+    document.getElementById('title').innerText = d.brand + ' ' + d.model;
+    document.getElementById('sub').innerText = 'Rs ' + Number(d.price).toLocaleString();
+    document.getElementById('editBtn').href = 'add.html?id=' + d.id;
+    const c = document.getElementById('content');
+    c.innerHTML = `
+      <div class="form" style="position:relative">
+        <div class="ribbon"></div>
+        <img class="detail-img" src="${escapeHtml(d.image) || 'https://picsum.photos/seed/laptop'+d.id+'/1200/600'}" alt="${escapeHtml(d.brand)} ${escapeHtml(d.model)}">
+        <div class="small"><strong>CPU:</strong> ${escapeHtml(d.cpu) || '-'}</div>
+        <div class="small"><strong>RAM:</strong> ${escapeHtml(d.ram) || '-'}</div>
+        <div class="small"><strong>Storage:</strong> ${escapeHtml(d.storage) || '-'}</div>
+        <p style="margin-top:12px">${escapeHtml(d.description) || ''}</p>
+      </div>
+    `;
+  });
+  </script>
+</body>
+</html>
